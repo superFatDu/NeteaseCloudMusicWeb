@@ -1,0 +1,151 @@
+@charset "UTF-8";
+/** 定义CSS常量 **/
+
+
+/** 清除内外边距 **/
+
+body, h1, h2, h3, h4, h5, h6, hr, p,
+blockquote, /* 结构元素 */
+dl, dt, dd, ul, ol, li, /* 列表元素 */
+pre, /* 文本格式元素 */
+form, fieldset, legend, button, input, textarea, /* 表单元素 */
+th, td, /* 表格元素 */
+img /* 图片元素 */
+{
+  margin: 0;
+  padding: 0;
+}
+
+/** 设置html/body初始高度 **/
+html,body{
+  width: 100%;
+  height: 100%;
+}
+
+/** 设置默认字体 **/
+
+body, button, input, select, textarea {
+  font: 16px/1.5 '微软雅黑', '宋体', tahoma, arial, helvetica, sans-serif; /* 字号/行高,字体[...] */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+}
+
+em, i {
+  font-style: normal;
+}
+
+em, b {
+  font-weight: normal;
+}
+
+/** 重置列表元素 **/
+
+ul, ol, li {
+  list-style: none;
+}
+
+/** 重置超链接元素 **/
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/** 重置图片元素 **/
+
+img {
+  border: 0 none;
+}
+
+/** 重置表格元素 **/
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+th,
+td { text-align: left; }
+}
+
+/** input 预设值 **/
+
+input {
+  font-size: .13rem !important;
+  color: #666;
+  cursor: pointer;
+  border: none;
+  height: .36rem !important;
+  line-height: .36rem !important;
+  background: transparent;
+  box-sizing: content-box !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+  text-indent: .05rem !important;
+&:-webkit-autofill {
+   /* 清除输入框自动填充背景色 */
+   -webkit-box-shadow: 0 0 0px 1000px white inset;
+   border: 1px solid transparent !important;
+ }
+&::-webkit-input-placeholder {
+   color: #999!important;
+ }
+&:disabled {
+   background: #f5f7fa;
+   cursor: not-allowed;
+ }
+&:focus{
+   background: transparent;
+   outline: none;
+ }
+}
+.el-input__icon{
+  line-height: .36rem !important;
+}
+
+/** button 预设值 **/
+
+button {
+  text-transform: none;
+  -webkit-appearance: button;
+&:disabled,
+&:disabled:hover {
+   background: #e7e7e7;
+   cursor: not-allowed;
+ }
+}
+
+/** chrome滚动条 **/
+
+::-webkit-scrollbar-track-piece {
+  -webkit-border-radius: 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  height: 50px;
+  border: 2px solid #d5e2e5;
+  -webkit-border-radius: 4px;
+  background-color: #d5e2e5;
+  outline-offset: -2px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  height: 50px;
+  -webkit-border-radius: 4px;
+  cursor: pointer;
+}
+
+/* flex */
+.d-flex{
+  display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+}
