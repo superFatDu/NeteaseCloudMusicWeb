@@ -46,7 +46,7 @@
       </div>
     </div>
     <div class="login-footer d-flex">
-      <i class="iconfont">&#xe60f;</i><span>superFatDu 2019，BeiJing</span>
+      <i class="iconfont">&#xe60f;</i><span>Wrote by superFatDu in 2019</span>
     </div>
   </div>
 </template>
@@ -84,17 +84,28 @@ export default {
         ele.style["color"] = "#d43c33";
         ele.style["background"] = "#fff";
       }
+      this.loginForm.password = "";
       this.clickPageShow(idx);
     },
     async userLogin(opt) {
       if (opt === "mobile") {
         let res = await LOGIN.loginPhone({phone: this.loginForm.phone, password: this.loginForm.password});
-        this.
+        if (res.code === 200 && Object.keys(res.account).length !== 0) {
+          this.$store.dispatch("storeUid", res.account.id);
+          localStorage.setItem("phone", this.loginForm.phone);
+        }
       } else if (opt === "email") {
         let res = await LOGIN.loginEmail({email: this.loginForm.email, password: this.loginForm.password});
-        window.console.log(res);
+        if (res.code === 200 && Object.keys(res.account).length !== 0) {
+          this.$store.dispatch("storeUid", res.account.id);
+          localStorage.setItem("email", this.loginForm.email);
+        }
       }
     }
+  },
+  created() {
+    if (localStorage.getItem("phone")) this.loginForm.phone = localStorage.getItem("phone");
+    if (localStorage.getItem("email")) this.loginForm.email = localStorage.getItem("email");
   }
 };
 </script>
@@ -157,6 +168,7 @@ export default {
         input {
           font-size: 0.15rem !important;
           color: #333;
+          text-indent: 0.1rem !important;
         }
       }
     }
@@ -176,6 +188,7 @@ export default {
         input {
           font-size: 0.15rem !important;
           color: #333;
+          text-indent: 0.1rem !important;
         }
       }
     }
