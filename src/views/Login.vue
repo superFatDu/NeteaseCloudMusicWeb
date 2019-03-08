@@ -1,48 +1,102 @@
 <template>
   <div class="login">
     <div class="login-index d-flex" v-show="pageShow[0]">
-      <div class="login-logo"></div>
+      <div class="login-logo">
+        <img src="../assets/images/login_index_logo.png" alt="" />
+      </div>
       <div class="login-chooses">
         <div class="login-choose-btn login-use-mobile" @touchstart.stop="btnMouseStart($event)" @touchend.stop="btnMouseEnd($event, 1)">手机号登陆</div>
         <div class="login-choose-btn login-use-email" @touchstart.stop="btnMouseStart($event)" @touchend.stop="btnMouseEnd($event, 2)">网易邮箱</div>
       </div>
     </div>
-    <div class="login-mobile" v-show="pageShow[1]"></div>
-    <div class="login-email" v-show="pageShow[2]"></div>
+    <div class="login-mobile" v-show="pageShow[1]">
+      <div class="login-page-title">
+        <i class="iconfont" @touchend.stop="btnMouseEnd($event, 0)">&#xe6a9;</i><span>手机号登陆</span>
+      </div>
+      <div class="mobile-form">
+        <div class="mobile-form-item">
+          <i class="iconfont">&#xe65f;</i>
+          <input type="text" placeholder="请输入手机号" v-model="loginForm.phone" />
+        </div>
+        <div class="mobile-form-item">
+          <i class="iconfont">&#xe620;</i>
+          <input type="password" placeholder="请输入密码" v-model="loginForm.password" />
+        </div>
+      </div>
+      <div class="login-page-submit">
+        <span @touchend.stop="userLogin('mobile')">登录</span>
+      </div>
+    </div>
+    <div class="login-email" v-show="pageShow[2]">
+      <div class="login-page-title">
+        <i class="iconfont" @touchend.stop="btnMouseEnd($event, 0)">&#xe6a9;</i><span>邮箱登录</span>
+      </div>
+      <div class="email-form">
+        <div class="email-form-item">
+          <i class="iconfont">&#xe643;</i>
+          <input type="text" placeholder="请输入网易邮箱" v-model="loginForm.email" />
+        </div>
+        <div class="email-form-item">
+          <i class="iconfont">&#xe620;</i>
+          <input type="password" placeholder="请输入密码" v-model="loginForm.password" />
+        </div>
+      </div>
+      <div class="login-page-submit">
+        <span @touchend.stop="userLogin('email')">登录</span>
+      </div>
+    </div>
     <div class="login-footer d-flex">
-      <i class="iconfont">&#xe60f;</i><span>superFatDu &copy;2019</span>
+      <i class="iconfont">&#xe60f;</i><span>superFatDu 2019，BeiJing</span>
     </div>
   </div>
 </template>
 
 <script>
+import { LOGIN } from "../api/login";
+import axios from "axios";
 export default {
   name: "Login",
   data() {
     return {
       pageShow: [true, false, false], // index/mobile/email
-      titleText: ""
-    }
+      loginForm: {
+        phone: "",
+        email: "",
+        password: ""
+      }
+    };
   },
   methods: {
     btnMouseStart(e) {
       let ele = e.target;
       ele.style["color"] = "#fff";
-      ele.style["background"] = "#c20c0c";
+      ele.style["background"] = "#d43c33";
+    },
+    clickPageShow(idx) {
+      for (let i = 0; i < this.pageShow.length; i++) {
+        this.pageShow.splice(i, 1, false);
+        if (i === idx) this.pageShow.splice(i, 1, true);
+      }
     },
     btnMouseEnd(e, idx) {
-      let ele = e.target;
-      ele.style["color"] = "#c20c0c";
-      ele.style["background"] = "#fff";
-
-      if (idx === 1) {
-        console.log("toMobile");
-      } else if (idx === 2) {
-        console.log("toEmail");
+      if (idx !== 0) {
+        let ele = e.target;
+        ele.style["color"] = "#d43c33";
+        ele.style["background"] = "#fff";
+      }
+      this.clickPageShow(idx);
+    },
+    async userLogin(opt) {
+      if (opt === "mobile") {
+        let res = await LOGIN.loginPhone({phone: this.loginForm.phone, password: this.loginForm.password});
+        this.
+      } else if (opt === "email") {
+        let res = await LOGIN.loginEmail({email: this.loginForm.email, password: this.loginForm.password});
+        window.console.log(res);
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -55,21 +109,110 @@ export default {
     height: 100%;
     position: relative;
     align-items: center;
+    background: url("../assets/images/login_index_bg.jpg") 50% 50% no-repeat;
+    background-size: cover;
+    .login-logo {
+      width: 100%;
+      position: absolute;
+      top: 15%;
+      left: 0;
+      text-align: center;
+      img {
+        width: 20%;
+        border-radius: 0.15rem;
+      }
+    }
     .login-chooses {
       width: 100%;
       box-sizing: border-box;
       padding: 0 0.3rem;
       .login-choose-btn {
         width: 100%;
-        line-height: 0.35rem;
-        color: #c20c0c;
-        border: 0.01rem solid #c20c0c;
+        box-sizing: border-box;
+        height: 0.42rem;
+        line-height: 0.42rem;
+        color: #d43c33;
+        background: #fff;
+        border: 0.01rem solid #d43c33;
         border-radius: 20px;
         text-align: center;
       }
       .login-use-email {
-        margin-top: .2rem;
+        margin-top: 0.2rem;
       }
+    }
+  }
+  .login-mobile {
+    .mobile-form {
+      margin-top: 0.3rem;
+      box-sizing: border-box;
+      padding: 0 0.15rem;
+      .mobile-form-item {
+        line-height: 0.42rem;
+        border-bottom: 1px solid #777;
+        margin-top: 0.15rem;
+        i {
+          font-size: 0.2rem;
+        }
+        input {
+          font-size: 0.15rem !important;
+          color: #333;
+        }
+      }
+    }
+  }
+  .login-email {
+    .email-form {
+      margin-top: 0.3rem;
+      box-sizing: border-box;
+      padding: 0 0.15rem;
+      .email-form-item {
+        line-height: 0.42rem;
+        border-bottom: 1px solid #777;
+        margin-top: 0.15rem;
+        i {
+          font-size: 0.2rem;
+        }
+        input {
+          font-size: 0.15rem !important;
+          color: #333;
+        }
+      }
+    }
+  }
+  .login-page-title {
+    line-height: 0.5rem;
+    background: #d43c33;
+    i {
+      display: inline-block;
+      width: 0.45rem;
+      box-sizing: border-box;
+      padding-left: 0.15rem;
+      color: #fff;
+      font-size: 0.2rem;
+      vertical-align: middle;
+    }
+    span {
+      color: #fff;
+      font-size: 0.16rem;
+    }
+  }
+  .login-page-submit {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 0.15rem;
+    margin-top: 0.4rem;
+    span {
+      display: inline-block;
+      width: 100%;
+      box-sizing: border-box;
+      height: 0.42rem;
+      line-height: 0.42rem;
+      color: #fff;
+      background: #d43c33;
+      border: 0.01rem solid #d43c33;
+      border-radius: 20px;
+      text-align: center;
     }
   }
   .login-footer {
@@ -80,13 +223,13 @@ export default {
     left: 0;
     bottom: 0.1rem;
     i {
-      color: #c20c0c;
+      color: #d43c33;
       font-size: 0.27rem;
       margin-right: 0.1rem;
     }
     span {
-      font-size: .12rem;
-      color: #666;
+      font-size: 0.12rem;
+      color: #444;
     }
   }
 }
