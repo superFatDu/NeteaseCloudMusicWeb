@@ -5,44 +5,76 @@
         <img src="../assets/images/login_index_logo.png" alt="" />
       </div>
       <div class="login-chooses">
-        <div class="login-choose-btn login-use-mobile" @touchstart.stop="btnMouseStart($event)" @touchend.stop="btnMouseEnd($event, 1)">手机号登陆</div>
-        <div class="login-choose-btn login-use-email" @touchstart.stop="btnMouseStart($event)" @touchend.stop="btnMouseEnd($event, 2)">网易邮箱</div>
+        <div
+          class="login-choose-btn login-use-mobile"
+          @touchstart.stop="btnMouseStart($event)"
+          @touchend.stop="btnMouseEnd($event, 1)"
+        >
+          手机号登陆
+        </div>
+        <div
+          class="login-choose-btn login-use-email"
+          @touchstart.stop="btnMouseStart($event)"
+          @touchend.stop="btnMouseEnd($event, 2)"
+        >
+          网易邮箱
+        </div>
       </div>
     </div>
     <div class="login-mobile" v-show="pageShow[1]">
       <div class="login-page-title">
-        <i class="iconfont" @touchend.stop="btnMouseEnd($event, 0)">&#xe6a9;</i><span>手机号登陆</span>
+        <i class="iconfont" @touchend.stop="btnMouseEnd($event, 0)">&#xe6a9;</i
+        ><span>手机号登陆</span>
       </div>
       <div class="mobile-form">
-        <div class="mobile-form-item">
+        <div class="mobile-form-item d-flex">
           <i class="iconfont">&#xe65f;</i>
-          <input type="text" placeholder="请输入手机号" v-model="loginForm.phone" />
+          <input
+            type="text"
+            placeholder="请输入手机号"
+            v-model="loginForm.phone"
+          />
         </div>
-        <div class="mobile-form-item">
+        <div class="mobile-form-item d-flex">
           <i class="iconfont">&#xe620;</i>
-          <input type="password" placeholder="请输入密码" v-model="loginForm.password" />
+          <input
+            type="password"
+            placeholder="请输入密码"
+            v-model="loginForm.password"
+          />
         </div>
       </div>
       <div class="login-page-submit">
         <span @touchend.stop="userLogin('mobile')">登录</span>
+        <p class="login-err">{{ loginError.mobile }}</p>
       </div>
     </div>
     <div class="login-email" v-show="pageShow[2]">
       <div class="login-page-title">
-        <i class="iconfont" @touchend.stop="btnMouseEnd($event, 0)">&#xe6a9;</i><span>邮箱登录</span>
+        <i class="iconfont" @touchend.stop="btnMouseEnd($event, 0)">&#xe6a9;</i
+        ><span>邮箱登录</span>
       </div>
       <div class="email-form">
-        <div class="email-form-item">
+        <div class="email-form-item d-flex">
           <i class="iconfont">&#xe643;</i>
-          <input type="text" placeholder="请输入网易邮箱" v-model="loginForm.email" />
+          <input
+            type="text"
+            placeholder="请输入网易邮箱"
+            v-model="loginForm.email"
+          />
         </div>
-        <div class="email-form-item">
+        <div class="email-form-item d-flex">
           <i class="iconfont">&#xe620;</i>
-          <input type="password" placeholder="请输入密码" v-model="loginForm.password" />
+          <input
+            type="password"
+            placeholder="请输入密码"
+            v-model="loginForm.password"
+          />
         </div>
       </div>
       <div class="login-page-submit">
         <span @touchend.stop="userLogin('email')">登录</span>
+        <p class="login-err">{{ loginError.email }}</p>
       </div>
     </div>
     <div class="login-footer d-flex">
@@ -53,7 +85,6 @@
 
 <script>
 import { LOGIN } from "../api/login";
-import axios from "axios";
 export default {
   name: "Login",
   data() {
@@ -63,6 +94,10 @@ export default {
         phone: "",
         email: "",
         password: ""
+      },
+      loginError: {
+        mobile: "",
+        email: ""
       }
     };
   },
@@ -84,28 +119,53 @@ export default {
         ele.style["color"] = "#d43c33";
         ele.style["background"] = "#fff";
       }
+      this.loginError.mobile = "";
+      this.loginError.email = "";
       this.loginForm.password = "";
       this.clickPageShow(idx);
     },
-    async userLogin(opt) {
+    userLogin(opt) {
       if (opt === "mobile") {
-        let res = await LOGIN.loginPhone({phone: this.loginForm.phone, password: this.loginForm.password});
-        if (res.code === 200 && Object.keys(res.account).length !== 0) {
-          this.$store.dispatch("storeUid", res.account.id);
-          localStorage.setItem("phone", this.loginForm.phone);
-        }
+        LOGIN.loginPhone({
+          phone: this.loginForm.phone,
+          password: this.loginForm.password
+        }).then(
+          res => {
+            res = res.data;
+            if (res.code === 200 && Object.keys(res.account).length !== 0) {
+              this.$store.dispatch("storeUid", res.account.id);
+              localStorage.setItem("phone", this.loginForm.phone);
+              this.$router.push("/home/index");
+            }
+          },
+          error => {
+            this.loginError.mobile = error;
+          }
+        );
       } else if (opt === "email") {
-        let res = await LOGIN.loginEmail({email: this.loginForm.email, password: this.loginForm.password});
-        if (res.code === 200 && Object.keys(res.account).length !== 0) {
-          this.$store.dispatch("storeUid", res.account.id);
-          localStorage.setItem("email", this.loginForm.email);
-        }
+        LOGIN.loginEmail({
+          email: this.loginForm.email,
+          password: this.loginForm.password
+        }).then(
+          res => {
+            if (res.code === 200 && Object.keys(res.account).length !== 0) {
+              this.$store.dispatch("storeUid", res.account.id);
+              localStorage.setItem("email", this.loginForm.email);
+              this.$router.push("/home/index");
+            }
+          },
+          error => {
+            this.loginError.email = error;
+          }
+        );
       }
     }
   },
   created() {
-    if (localStorage.getItem("phone")) this.loginForm.phone = localStorage.getItem("phone");
-    if (localStorage.getItem("email")) this.loginForm.email = localStorage.getItem("email");
+    if (localStorage.getItem("phone"))
+      this.loginForm.phone = localStorage.getItem("phone");
+    if (localStorage.getItem("email"))
+      this.loginForm.email = localStorage.getItem("email");
   }
 };
 </script>
@@ -162,6 +222,7 @@ export default {
         line-height: 0.42rem;
         border-bottom: 1px solid #777;
         margin-top: 0.15rem;
+        align-items: center;
         i {
           font-size: 0.2rem;
         }
@@ -169,6 +230,7 @@ export default {
           font-size: 0.15rem !important;
           color: #333;
           text-indent: 0.1rem !important;
+          flex: 1;
         }
       }
     }
@@ -182,6 +244,7 @@ export default {
         line-height: 0.42rem;
         border-bottom: 1px solid #777;
         margin-top: 0.15rem;
+        align-items: center;
         i {
           font-size: 0.2rem;
         }
@@ -189,6 +252,7 @@ export default {
           font-size: 0.15rem !important;
           color: #333;
           text-indent: 0.1rem !important;
+          flex: 1;
         }
       }
     }
@@ -225,6 +289,11 @@ export default {
       background: #d43c33;
       border: 0.01rem solid #d43c33;
       border-radius: 20px;
+      text-align: center;
+    }
+    .login-err {
+      color: #d43c33;
+      line-height: 0.42rem;
       text-align: center;
     }
   }

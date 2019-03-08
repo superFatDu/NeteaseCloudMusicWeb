@@ -12,11 +12,12 @@ axios.interceptors.request.use( config => {
 
 /********** response拦截器 ********/
 axios.interceptors.response.use(response => {
-  let responseData = response.data;
+  let responseData = response;
     return responseData;
 }, error => {
   if (error.response) {
     // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+    //return error.response.data.msg;
     throw new Error(error.response.data.msg)
   } else {
     // 由于设置请求发生错误而触发的错误

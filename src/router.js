@@ -1,8 +1,10 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Login from "./views/Login";
-import Index from "./views/Index";
 import Hello from "./views/Hello";
+import HomeIndex from "./views/HomeIndex";
+import Home from "./views/Home";
+import HomeSearch from "./views/HomeSearch";
 
 Vue.use(Router);
 
@@ -21,9 +23,21 @@ export default new Router({
       component: Login
     },
     {
-      path: "/index",
-      name: "Index",
-      component: Index
+      path: "/home",
+      name: "Home",
+      component: Home,
+      children: [
+        {
+          path: "index",
+          name: "HomeIndex",
+          component: HomeIndex
+        },
+        {
+          path: "search",
+          name: "HomeSearch",
+          component: HomeSearch
+        }
+      ]
     }
   ]
 });

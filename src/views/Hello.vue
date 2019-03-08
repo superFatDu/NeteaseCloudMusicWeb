@@ -1,12 +1,11 @@
 <template>
   <div class="hello">
     <div class="count-down">
-      {{time}}S
+      {{time}}&nbsp;秒
     </div>
     <p>
-      那些记忆喂了狗的青春，<br />
-      一首首有故事的歌，<br />
-      说再见的人。
+      青春匆匆茫茫喂了狗，<br />
+      唱首歌给夜归人。
     </p>
     <div class="hello-footer">
       <i class="iconfont">&#xe60f;</i><span>Wrote by superFatDu in 2019</span>
@@ -22,19 +21,23 @@ export default {
   data() {
     return {
       status: false,
-      time: 3
+      time: 5
     }
   },
   methods: {
     async getStatus() {
       let res = await LOGIN.getStatus();
-      res.code === 200 ? this.status = true : this.status = false;
+      res.data.code === 200 ? this.status = true : this.status = false;
     },
     turnPage() {
       let _this = this;
-      setTimeout(function () {
-        //_this.status === true ? _this.$router.push("/index") : _this.$router.push("/login");
-      }, 3000)
+      let timer = setInterval(function () {
+        _this.time -= 1;
+        if (_this.time === 0) {
+          clearInterval(timer);
+          _this.status === true ? _this.$router.push("/home/index") : _this.$router.push("/login");
+        }
+      }, 1000);
     }
   },
   mounted() {
@@ -52,13 +55,17 @@ export default {
   background-size: cover;
   position: relative;
   .count-down {
-    height: .37rem;
-    width: .6rem;
-    color: #333;
-    background: #fff;
+    height: .38rem;
+    width: .75rem;
+    line-height: .38rem;
+    color: #fff;
+    background: rgba(0, 0, 0, .3);
     border-radius: 5px;
-    font-size: .2rem;
+    font-size: .17rem;
     text-align: center;
+    position: absolute;
+    top: .2rem;
+    right: .2rem;
   }
   p {
     width: 100%;
@@ -68,7 +75,7 @@ export default {
     line-height: .4rem;
     text-align: center;
     position: absolute;
-    top: 25%;
+    top: 27%;
     left: 0;
   }
   .hello-footer {
