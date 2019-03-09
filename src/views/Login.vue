@@ -133,7 +133,7 @@ export default {
           res => {
             res = res.data;
             if (res.code === 200 && Object.keys(res.account).length !== 0) {
-              this.$store.dispatch("storeUid", res.account.id);
+              this.$store.dispatch("storeUserInfo", res.profile);
               localStorage.setItem("phone", this.loginForm.phone);
               this.$router.push("/home/index");
             }
@@ -148,8 +148,9 @@ export default {
           password: this.loginForm.password
         }).then(
           res => {
+            res = res.data;
             if (res.code === 200 && Object.keys(res.account).length !== 0) {
-              this.$store.dispatch("storeUid", res.account.id);
+              this.$store.dispatch("storeUserInfo", res.profile);
               localStorage.setItem("email", this.loginForm.email);
               this.$router.push("/home/index");
             }

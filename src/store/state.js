@@ -1,11 +1,11 @@
-let uid = "";
+let profile = {};
 
 try {
-  if (sessionStorage.uid) uid = sessionStorage.uid;
+  if (localStorage.profile) profile = localStorage.profile;
 } catch (e) {
   throw Error(e);
 }
 
 export default {
-  uid
+  profile
 };

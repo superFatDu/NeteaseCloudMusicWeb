@@ -1,6 +1,6 @@
 export default {
-  storeUid(state, param) {
-    state.uid = param;
-    sessionStorage.uid = param;
+  storeUserInfo(state, param) {
+    state.profile = JSON.stringify(param);
+    localStorage.profile = JSON.stringify(param);
   }
 }

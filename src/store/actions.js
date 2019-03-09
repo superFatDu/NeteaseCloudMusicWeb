@@ -1,5 +1,5 @@
 export default {
-  storeUid({ commit }, param) {
-    commit("storeUid", param);
+  storeUserInfo({ commit }, param) {
+    commit("storeUserInfo", param);
   }
 }
