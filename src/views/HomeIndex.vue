@@ -1,19 +1,19 @@
 <template>
   <div class="index">
     <div class="top-title">
-      <i class="iconfont top-title-menu">&#xe60b;</i>
+      <i class="iconfont top-title-menu" @touchend.stop="showMenuSetting">&#xe60b;</i>
       <div class="top-title-nav">
-        <i class="iconfont" :class="{active: 1 === topNavActive}" @touchend="topNavActive = 1">&#xe6e1;</i>
-        <i class="iconfont" :class="{active: 2 === topNavActive}" @touchend="topNavActive = 2">&#xe63e;</i>
+        <i class="iconfont" :class="{active: 1 === topNavActive}" @touchend.stop="topPlaylist">&#xe6e1;</i>
+        <i class="iconfont" :class="{active: 2 === topNavActive}" @touchend.stop="topRecommend">&#xe63e;</i>
       </div>
       <i class="iconfont top-title-search">&#xe607;</i>
     </div>
-    <div class="menu-setting">
+    <div class="menu-setting" ref="menuSetting" @touchstart.stop="menuMoveStar($event)" @touchend.stop="menuMoveEnd($event)">
       <div class="menu-setting-items d-flex">
-        <div class="setting-title d-flex">
+        <div class="setting-title d-flex" ref="settingTitle">
           <div class="title-info d-flex">
             <img :src="profile.avatarUrl" alt="用户头像">
-            <span>{{ profile.nickname }}</span>
+            <span class="d-flex">{{ profile.nickname }} <span class="user-level">Lv.{{userDtail.level}}</span></span>
           </div>
         </div>
         <div class="setting-items">
@@ -52,29 +52,148 @@
         </div>
       </div>
     </div>
+    <div class="mask" ref="mask" @touchend.stop="closeMenuSetting"></div>
+    <div class="index-main">
+      <transition name="fade">
+        <div class="playlist" v-show="navMainShow">
+          <div class="create-list">
+            <div class="list-title">
+              <i class="iconfont">&#xe64a;</i>
+              <span>创建的歌单({{ createList.length }})</span>
+            </div>
+            <div class="list-items d-flex" v-for="(item, index) of createList" :key="index" @touchend.stop="turnToSongList(item)">
+              <div class="list-item-pic">
+                <img :src="item.coverImgUrl" alt="">
+              </div>
+              <div class="list-item-info d-flex">
+                <p class="item-info-name">{{item.name}}</p>
+                <p class="item-info-count">{{item.trackCount}}首</p>
+              </div>
+            </div>
+          </div>
+          <div class="collect-list">
+            <div class="list-title">
+              <i class="iconfont">&#xe64a;</i>
+              <span>收藏的歌单({{ collectList.length }})</span>
+            </div>
+            <div class="list-items">
+              <div class="list-items d-flex" v-for="(item, index) of collectList" :key="index" @touchend.stop="turnToSongList(item)">
+                <div class="list-item-pic">
+                  <img :src="item.coverImgUrl" alt="">
+                </div>
+                <div class="list-item-info d-flex">
+                  <p class="item-info-name">{{item.name}}</p>
+                  <p class="item-info-count">{{item.trackCount}}首&nbsp;by{{item.creator.nickname}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+      <transition name="fade">
+        <div class="recommend" v-show="!navMainShow">2</div>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script>
+import { SHOW_LOADING, HIDE_LOADING } from "../utils/loading/loading";
 import { LOGIN } from "../api/login";
+import { HOME_INDEX } from "../api/homeIndex";
 
 export default {
   name: "HomeIndex",
   data() {
     return {
       topNavActive: 1,
-      profile: "",
-      menuBg: ""
-    }
+      profile: {},
+      userDtail: {},
+      menuBg: "",
+      starX: 0,
+      endX: 0,
+      navMainShow: true,
+      createList: [],
+      collectList: []
+    };
   },
   methods: {
     userLogout() {
       LOGIN.logout();
+    },
+    topPlaylist() {
+      this.topNavActive = 1;
+      this.navMainShow = true;
+    },
+    topRecommend() {
+      this.topNavActive = 2;
+      this.navMainShow = false;
+    },
+    showMenuSetting() {
+      this.$refs.menuSetting.style["left"] = "0";
+      this.$refs.mask.style["z-index"] = 8;
+      this.$refs.mask.style["opacity"] = 1;
+    },
+    closeMenuSetting() {
+      this.$refs.menuSetting.style["left"] = "-100%";
+      this.$refs.mask.style["z-index"] = -1;
+      this.$refs.mask.style["opacity"] = 0;
+      this.starX = 0;
+      this.endX = 0;
+    },
+    menuMoveStar(e) {
+      this.starX = e.touches[0].clientX;
+      console.log(this.starX);
+    },
+    menuMoveEnd(e) {
+      this.endX = e.changedTouches[0].clientX;
+      if ((this.starX - this.endX) > 60) {
+        this.closeMenuSetting();
+      }
+    },
+    getUserDetail() {
+      HOME_INDEX.userDetail({
+        uid: this.profile.userId
+      }).then(res => {
+        res = res.data;
+        this.userDtail = res;
+      })
+    },
+    getPlayLists() {
+      let _this = this;
+      HOME_INDEX.getPlayList({
+        uid: this.profile.userId
+      }).then(res => {
+        res = res.data;
+        if (res.code === 200) {
+          _this.createList = [];
+          _this.collectList = [];
+          for(let i = 0; i < res.playlist.length; i++) {
+            if (res.playlist[i].subscribed === false) {
+              _this.createList.push(res.playlist[i]);
+            } else {
+              _this.collectList.push(res.playlist[i]);
+            }
+          }
+          HIDE_LOADING();
+        }
+      });
+    },
+    turnToSongList(val) {
+      let opt = this.$Base64.encode(JSON.stringify(val));
+      this.$router.push({ path: "/songlist", query: { songInfo: opt } });
     }
   },
+  mounted() {
+    this.$refs.settingTitle.style["background"] = `url(${this.menuBg}) 50% 50% no-repeat`;
+    this.$refs.settingTitle.style["background-size"] = "cover";
+  },
   created() {
+    SHOW_LOADING();
     this.profile = JSON.parse(localStorage.getItem("profile"));
     this.menuBg = this.profile.backgroundUrl;
+    this.getUserDetail();
+    this.getPlayLists();
   }
 }
 </script>
@@ -84,10 +203,17 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  box-sizing: border-box;
+  padding-top: 0.6rem;
   .top-title {
     line-height: 0.6rem;
+    width: 100%;
     height: 0.6rem;
     background: #d43c33;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 7;
     i {
       color: #fff;
       font-size: 0.26rem;
@@ -110,6 +236,7 @@ export default {
     }
     .top-title-nav {
       width: 100%;
+      height: 100%;
       text-align: center;
       i {
         color: rgba(255, 255, 255, 0.4);
@@ -122,23 +249,34 @@ export default {
       }
     }
   }
-  .menu-setting {
+  .mask {
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.4);
     position: absolute;
     top: 0;
     left: 0;
-    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+    opacity: 0;
+    transition: all linear 0.2s;
+  }
+  .menu-setting {
+    width: 80%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: -100%;
+    transition: all ease-in-out 0.2s;
+    z-index: 9;
     .menu-setting-items {
-      width: 80%;
+      width: 100%;
       height: 100%;
       background: #fff;
       overflow: hidden;
       position: relative;
       flex-direction: column;
       .setting-title {
-        height: 1.55rem;
-        background: url("../assets/images/Hello_bg.jpg") 50% 50% no-repeat;
+        height: 1.8rem;
         background-size: cover;
         align-items: flex-end;
         .title-info {
@@ -154,6 +292,16 @@ export default {
           span {
             color: #fff;
             font-size: 0.16rem;
+            align-items: center;
+            .user-level {
+              display: inline-block;
+              padding: 0 0.05rem;
+              font-size: 0.1rem;
+              border: 0.01rem solid #fff;
+              border-radius: 0.09rem;
+              font-weight: bold;
+              margin-left: 0.1rem;
+            }
           }
         }
       }
@@ -205,6 +353,103 @@ export default {
             span {
               font-size: 0.15rem;
             }
+          }
+        }
+      }
+    }
+  }
+  .index-main {
+    width: 100%;
+    height: 100%;
+    .fade-enter-active, .fade-leave-active {
+      transition: opacity .5s;
+    }
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+      opacity: 0;
+    }
+    .playlist, .recommend {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding-top: 0.6rem;
+      overflow: scroll;
+      position: absolute;
+      top: 0;
+      left: 0;
+      .create-list {
+        .list-title {
+          width: 100%;
+          height: 0.4rem;
+          line-height: 0.4rem;
+          background: #efefef;
+          color: #666;
+          box-sizing: border-box;
+          padding-left: 0.12rem;
+          i {
+            vertical-align: middle;
+            margin-right: 0.07rem;
+            font-size: 0.22rem;
+          }
+          span {
+            font-size: 0.12rem;
+          }
+        }
+      }
+      .collect-list {
+        .list-title {
+          width: 100%;
+          height: 0.3rem;
+          line-height: 0.3rem;
+          background: #efefef;
+          color: #666;
+          box-sizing: border-box;
+          padding-left: 0.12rem;
+          i {
+            vertical-align: middle;
+            margin-right: 0.07rem;
+            font-size: 0.22rem;
+          }
+          span {
+            font-size: 0.12rem;
+          }
+        }
+      }
+      .list-items {
+        box-sizing: border-box;
+        padding: .07rem .08rem;
+        height: 0.65rem;
+        .list-item-pic {
+          width: 0.55rem;
+          height: 0.55rem;
+          img {
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: .05rem;
+          }
+        }
+        .list-item-info {
+          flex: 1;
+          margin-left: .1rem;
+          flex-direction: column;
+          justify-content: center;
+          height: 0.55rem;
+          padding-bottom: 0.05rem;
+          border-bottom: 0.01rem solid #f1f1f1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .item-info-name {
+            font-size: 0.16rem;
+          }
+          .item-info-count{
+            margin-top: 0.05rem;
+            font-size: 0.12rem;
+            color: #999;
           }
         }
       }
