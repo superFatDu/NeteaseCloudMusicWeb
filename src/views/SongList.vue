@@ -1,5 +1,5 @@
 <template>
-  <div class="song-list">
+  <div class="song-list d-flex">
     <div class="song-list-title">
       <div class="back-title">
         <i class="iconfont" @touchend.stop="goBack">&#xe6a9;</i>
@@ -54,71 +54,80 @@ export default {
   height: 100%;
   background: #a7a0b5;
   position: relative;
-  .back-title {
-    width: 100%;
-    line-height: 0.5rem;
-    i {
-      display: inline-block;
-      box-sizing: border-box;
-      height: 100%;
-      padding: 0 0.15rem 0 0.15rem;
-      font-size: 0.22rem;
-      color: #fff;
+  flex-direction: column;
+  .song-list-title {
+    .back-title {
+      width: 100%;
       line-height: 0.5rem;
-      vertical-align: middle;
+      i {
+        display: inline-block;
+        box-sizing: border-box;
+        height: 100%;
+        padding: 0 0.15rem 0 0.15rem;
+        font-size: 0.22rem;
+        color: #fff;
+        line-height: 0.5rem;
+        vertical-align: middle;
+      }
+      span {
+        display: inline-block;
+        height: 100%;
+        line-height: 0.5rem;
+        font-size: 0.19rem;
+        color: #fff;
+        vertical-align: middle;
+      }
     }
-    span {
-      display: inline-block;
-      height: 100%;
-      line-height: 0.5rem;
-      font-size: 0.19rem;
-      color: #fff;
-      vertical-align: middle;
+    .song-info {
+      width: 100%;
+      height: 1.6rem;
+      box-sizing: border-box;
+      margin-top: 0.1rem;
+      padding: 0 0.15rem;
+      .info-img {
+        height: 1.3rem;
+        img {
+          width: 1.2rem;
+          height: 1.2rem;
+          border-radius: 0.05rem;
+        }
+      }
+      .info-list {
+        height: 1.3rem;
+        flex: 1;
+        margin-left: 0.15rem;
+        p {
+          color: #fff;
+          font-size: 0.19rem;
+          line-height: 0.23rem;
+          margin-top: 0.05rem;
+        }
+        .user-info {
+          align-items: center;
+          margin-top: 0.25rem;
+          img {
+            width: 0.3rem;
+            height: 0.3rem;
+            border-radius: 50%;
+          }
+          span {
+            font-size: 0.12rem;
+            color: #fff;
+            margin-left: 0.05rem;
+          }
+          i {
+            font-size: 0.12rem;
+            color: #fff;
+          }
+        }
+      }
     }
   }
-  .song-info {
-    width: 100%;
-    height: 1.5rem;
-    box-sizing: border-box;
-    margin-top: 0.1rem;
-    padding: 0 0.15rem;
-    .info-img {
-      height: 1.3rem;
-      img {
-        width: 1.3rem;
-        height: 1.3rem;
-        border-radius: 0.05rem;
-      }
-    }
-    .info-list {
-      height: 1.3rem;
-      flex: 1;
-      margin-left: 0.15rem;
-      p {
-        color: #fff;
-        font-size: 0.19rem;
-        line-height: 0.23rem;
-        margin-top: 0.05rem;
-      }
-      .user-info {
-        align-items: center;
-        margin-top: 0.25rem;
-        img {
-          width: 0.3rem;
-          height: 0.3rem;
-          border-radius: 50%;
-        }
-        span {
-          font-size: 0.12rem;
-          color: #fff;
-          margin-left: 0.05rem;
-        }
-        i {
-          font-size: 0.12rem;
-          color: #fff;
-        }
-      }
-    }
+  .song-list-items {
+    flex: 1;
+    background: #fff;
+    border-top-left-radius: .15rem;
+    border-top-right-radius: .15rem;
   }
 }
 </style>

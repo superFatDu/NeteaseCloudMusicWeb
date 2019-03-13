@@ -1,7 +1,7 @@
 /* ElementUI */
 .el-loading-spinner .path {
-    stroke: #d43c33;
+    stroke: #d43c33 !important;
 }
 .el-loading-spinner .el-loading-text {
-    color: #d43c33;
+    color: #d43c33 !important;
 }

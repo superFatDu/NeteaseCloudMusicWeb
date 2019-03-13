@@ -114,7 +114,8 @@ export default {
       endX: 0,
       navMainShow: true,
       createList: [],
-      collectList: []
+      collectList: [],
+      touchFlag: true
     };
   },
   methods: {
@@ -180,8 +181,10 @@ export default {
       });
     },
     turnToSongList(val) {
-      let opt = this.$Base64.encode(JSON.stringify(val));
-      this.$router.push({ path: "/songlist", query: { songInfo: opt } });
+      if (this.touchFlag) {
+        let opt = this.$Base64.encode(JSON.stringify(val));
+        this.$router.push({ path: "/songlist", query: { songInfo: opt } });
+      }
     }
   },
   mounted() {
@@ -190,10 +193,19 @@ export default {
   },
   created() {
     SHOW_LOADING();
+    let _this = this;
     this.profile = JSON.parse(localStorage.getItem("profile"));
     this.menuBg = this.profile.backgroundUrl;
     this.getUserDetail();
     this.getPlayLists();
+    document.addEventListener("touchstart", () => {
+      //e.preventDefault();
+      _this.touchFlag = true;
+    });
+    document.addEventListener("touchmove", () => {
+      //e.preventDefault();
+      _this.touchFlag = false;
+    });
   }
 }
 </script>
