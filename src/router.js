@@ -5,7 +5,7 @@ import Hello from "./views/Hello";
 import HomeIndex from "./views/HomeIndex";
 import Home from "./views/Home";
 import HomeSearch from "./views/HomeSearch";
-import SongList from "./views/SongList";
+import Song from "./views/Song";
 
 Vue.use(Router);
 
@@ -41,9 +41,9 @@ export default new Router({
       ]
     },
     {
-      path: "/songlist",
-      name: "SongList",
-      component: SongList
+      path: "/song",
+      name: "Song",
+      component: Song
     }
   ]
 });

@@ -101,6 +101,7 @@
 import { SHOW_LOADING, HIDE_LOADING } from "../utils/loading/loading";
 import { LOGIN } from "../api/login";
 import { HOME_INDEX } from "../api/homeIndex";
+import { HANDLE_TOUCH } from "../utils/handleTouch/handleTouch";
 
 export default {
   name: "HomeIndex",
@@ -183,7 +184,7 @@ export default {
     turnToSongList(val) {
       if (this.touchFlag) {
         let opt = this.$Base64.encode(JSON.stringify(val));
-        this.$router.push({ path: "/songlist", query: { songInfo: opt } });
+        this.$router.push({ name: "Song", params: { songInfo: opt } });
       }
     }
   },
@@ -198,14 +199,7 @@ export default {
     this.menuBg = this.profile.backgroundUrl;
     this.getUserDetail();
     this.getPlayLists();
-    document.addEventListener("touchstart", () => {
-      //e.preventDefault();
-      _this.touchFlag = true;
-    });
-    document.addEventListener("touchmove", () => {
-      //e.preventDefault();
-      _this.touchFlag = false;
-    });
+    HANDLE_TOUCH(_this);
   }
 }
 </script>

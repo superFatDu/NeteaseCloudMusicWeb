@@ -29,7 +29,11 @@ export default {
       let res = await LOGIN.getStatus();
       // res.data.code === 200 ? this.status = true : this.status = false;
       if (res.data.code === 200) {
-        this.status = true;
+       // this.status = true;
+        this.status = false;
+        localStorage.removeItem("phone");
+        localStorage.removeItem("email");
+        localStorage.removeItem("profile");
       } else {
         this.status = false;
         localStorage.removeItem("phone");
