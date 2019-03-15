@@ -1,7 +1,7 @@
 <template>
   <div class="song">
     <song-list :propList="originData" :propInfo="playListInfo" @turnToPlayer="toPlayer" v-show="!playerShow"></song-list>
-    <song-player :propList="originData.songList" :playIndex="playIndex" v-show="playerShow"></song-player>
+    <song-player :propList="originData.songList" :playIndex="playIndex" @showSongList="showSongList" v-show="playerShow"></song-player>
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default {
         songCount: 0
       },
       playListInfo: {},
-      playIndex: -1,
+      playIndex: 2,
       playerShow: false
     };
   },
@@ -50,6 +50,9 @@ export default {
     toPlayer(idx) {
       this.playIndex = idx;
       this.playerShow = true;
+    },
+    showSongList() {
+      this.playerShow = false;
     }
   },
   created() {

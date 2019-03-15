@@ -76,7 +76,7 @@ export default {
   .song-list-title {
     .back-title {
       width: 100%;
-      line-height: 0.5rem;
+      line-height: 0.6rem;
       position: fixed;
       top: 0;
       left: 0;
@@ -88,13 +88,13 @@ export default {
         padding: 0 0.15rem 0 0.15rem;
         font-size: 0.22rem;
         color: #fff;
-        line-height: 0.5rem;
+        line-height: 0.6rem;
         vertical-align: middle;
       }
       span {
         display: inline-block;
         height: 100%;
-        line-height: 0.5rem;
+        line-height: 0.6rem;
         font-size: 0.19rem;
         color: #fff;
         vertical-align: middle;
