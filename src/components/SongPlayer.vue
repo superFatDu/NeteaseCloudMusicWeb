@@ -15,32 +15,36 @@
         @ended="playJudge"
         @loadedmetadata="audioLoadInfo"
         @timeupdate="audioTimeUpdate"
+        @play="audioPlay"
+        @pause="audioPause"
       ></audio>
     </div>
     <div class="player-pic">
-      <img :src="audioInfo.al.picUrl" alt="" :class="{picAnimation: picAnimation}">
+      <img :src="audioInfo.al.picUrl" alt="" class="picAnimation" ref="playerPic">
     </div>
     <div class="player-footer d-flex">
       <div class="progress-bar d-flex">
         <div class="update-time">{{ progressBar.updateMS }}</div>
         <div class="drag-bar">
-          <div class="progress-line"></div>
-          <div class="drag-btn"></div>
+          <div class="progress-line">
+            <div class="current-line" ref="currentLine"></div>
+          </div>
+          <div class="drag-btn" ref="dragBtn"></div>
         </div>
         <div class="total-time">{{ progressBar.durationMS }}</div>
       </div>
       <div class="operate-btn d-flex">
         <div class="operate-loop">
-          <i class="iconfont">&#xe60c;</i>
+          <i class="iconfont" :class="{iconliebiaoxunhuan: whetherLoop, icondanquxunhuan: !whetherLoop}" @touchend="loopOrSingle"></i>
         </div>
         <div class="operate-prev">
-          <i class="iconfont">&#xe60e;</i>
+          <i class="iconfont" @touchend="playPrevSong">&#xe60e;</i>
         </div>
         <div class="operate-play">
-          <i class="iconfont">&#xe606;</i>
+          <i class="iconfont" :class="{iconbofang: !whetherPause, iconzanting: whetherPause}" @touchend="pauseOrPlay"></i>
         </div>
         <div class="operate-next">
-          <i class="iconfont">&#xe614;</i>
+          <i class="iconfont" @touchend="playNextSong">&#xe614;</i>
         </div>
         <div class="operate-like">
           <i class="iconfont">&#xe665;</i>
@@ -70,12 +74,13 @@ export default {
         }
       },
       index: this.playIndex,
-      picAnimation: true,
       progressBar: {
         duration: 0,
         updateMS: "00:00",
-        durationMS: ""
-      }
+        durationMS: "00:00"
+      },
+      whetherPause: false,
+      whetherLoop: true
     };
   },
   methods: {
@@ -92,25 +97,79 @@ export default {
       });
     },
     playJudge() {
-      this.index += 1;
-      this.playIndex = this.index;
-      this.getSongInfo(this.index);
+      if (this.whetherLoop) {
+        this.index += 1;
+        this.getSongInfo(this.index);
+      } else {
+        this.getSongInfo(this.index);
+      }
     },
     audioLoadInfo(e) {
       this.progressBar.duration = e.target.duration;
       let durationS = parseInt(e.target.duration % 60);
       let durationM = parseInt(e.target.duration / 60);
       if (durationM < 10) durationM = "0" + durationM;
+      if (durationS < 10) durationS = "0" + durationS;
       this.progressBar.durationMS = `${durationM}:${durationS}`;
     },
     audioTimeUpdate(e) {
-      console.log(e);
+      let currentTime = e.target.currentTime;
+      let updateS = parseInt(currentTime % 60);
+      let updateM = parseInt(currentTime / 60);
+      if (updateS < 10) updateS = "0" + updateS;
+      if (updateM < 10) updateM = "0" + updateM;
+      this.progressBar.updateMS = `${updateM}:${updateS}`;
+      let rate = currentTime / this.progressBar.duration;
+      this.$refs.currentLine.style["width"] = rate.toFixed(2) * 100 + "%";
+      let dragBarWidth = document.querySelector(".drag-bar").clientWidth;
+      let offsetLeft = (dragBarWidth * rate.toFixed(2)).toFixed(0);
+      this.$refs.dragBtn.style["left"] = offsetLeft + "px";
+    },
+    pauseOrPlay() {
+      let Media = this.$refs.audioMedia;
+      if (this.whetherPause) {
+        this.whetherPause = false;
+        Media.play();
+        this.$refs.playerPic.style["animation-play-state"] = "running";
+      } else {
+        this.whetherPause = true;
+        Media.pause();
+        this.$refs.playerPic.style["animation-play-state"] = "paused";
+      }
+    },
+    loopOrSingle() {
+      if (this.whetherLoop) {
+        this.whetherLoop = false;
+      } else {
+        this.whetherLoop = true;
+      }
+    },
+    audioPlay() {
+      this.whetherPause = false;
+      this.$refs.playerPic.style["animation-play-state"] = "running";
+    },
+    audioPause() {
+      this.whetherPause = true;
+      this.$refs.playerPic.style["animation-play-state"] = "paused";
+    },
+    playPrevSong() {
+      this.index -= 1;
+      if (this.index < 0) this.index = this.propList.length - 1;
+      this.getSongInfo(this.index);
+    },
+    playNextSong() {
+      this.index += 1;
+      if (this.index === this.propList.length) this.index = 0;
+      this.getSongInfo(this.index);
     }
   },
   watch: {
     playIndex(idx) {
       this.index = idx;
       this.getSongInfo(idx);
+      this.audioInfo = this.propList[idx];
+    },
+    index(idx) {
       this.audioInfo = this.propList[idx];
     }
   }
@@ -215,7 +274,7 @@ export default {
         color: #aaa;
       }
       .drag-bar {
-        margin: 0 0.2rem;
+        margin: 0 0.17rem;
         width: 100%;
         position: relative;
         .progress-line{
@@ -224,6 +283,15 @@ export default {
           border-radius: 0.03rem;
           background: #bbb;
           vertical-align: middle;
+          position: relative;
+          .current-line {
+            height: 0.02rem;
+            width: 0;
+            background: #d43c33;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
         }
         .drag-btn {
           width: 0.14rem;
@@ -261,18 +329,20 @@ export default {
       div {
         i {
           font-size: 0.25rem;
-          color: #fff;
+          color: #bbb;
         }
       }
       .operate-play {
         i {
           font-size: 0.55rem;
+          color: #fff;
         }
       }
       .operate-prev,
       .operate-next {
         i {
           font-size: 0.4rem;
+          color: #fff;
         }
       }
     }

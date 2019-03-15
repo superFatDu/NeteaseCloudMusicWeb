@@ -23,7 +23,7 @@ export default {
         songCount: 0
       },
       playListInfo: {},
-      playIndex: 2,
+      playIndex: -1,
       playerShow: false
     };
   },
