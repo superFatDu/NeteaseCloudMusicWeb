@@ -91,7 +91,24 @@
         </div>
       </transition>
       <transition name="fade">
-        <div class="recommend" v-show="!navMainShow">2</div>
+        <div class="recommend" v-show="!navMainShow">
+          <!--<div class="swiper-container">
+            <div class="swiper-wrapper">
+              <div v-for='(item,index) in banners' :key='index' class="swiper-slide">
+                <div class="iSlide">
+                  <img class="img" :src="item.imageUrl">
+                </div>
+              </div>
+            </div>
+          </div>-->
+          <swiper :options="swiperOption">
+            <!-- slides -->
+            <swiper-slide v-for="(item, index) of banners" :key="index">
+              <img class="swiper-img" :src="item.imageUrl" alt="">
+            </swiper-slide>
+            <div class="swiper-pagination"  slot="pagination"></div>
+          </swiper>
+        </div>
       </transition>
     </div>
   </div>
@@ -102,11 +119,21 @@ import { SHOW_LOADING, HIDE_LOADING } from "../utils/loading/loading";
 import { LOGIN } from "../api/login";
 import { HOME_INDEX } from "../api/homeIndex";
 import { HANDLE_TOUCH } from "../utils/handleTouch/handleTouch";
-
 export default {
   name: "HomeIndex",
   data() {
     return {
+      swiperOption: {
+        pagination: {
+          el: ".swiper-pagination"
+        },
+        loop: true,
+        autoplay: true,
+        effect : 'fade',
+        fadeEffect: {
+          crossFade: true
+        }
+      },
       topNavActive: 1,
       profile: {},
       userDtail: {},
@@ -116,7 +143,8 @@ export default {
       navMainShow: true,
       createList: [],
       collectList: [],
-      touchFlag: true
+      touchFlag: true,
+      banners: []
     };
   },
   methods: {
@@ -186,6 +214,12 @@ export default {
         let opt = this.$Base64.encode(JSON.stringify(val));
         this.$router.push({ name: "Song", params: { songInfo: opt } });
       }
+    },
+    getBanner() {
+      HOME_INDEX.getBanner().then(res => {
+        res = res.data;
+        this.banners = res.banners;
+      })
     }
   },
   mounted() {
@@ -199,6 +233,7 @@ export default {
     this.menuBg = this.profile.backgroundUrl;
     this.getUserDetail();
     this.getPlayLists();
+    this.getBanner();
     HANDLE_TOUCH(_this);
   }
 }
@@ -458,6 +493,10 @@ export default {
             color: #999;
           }
         }
+      }
+      .swiper-container {
+        box-sizing: border-box;
+        padding: 0 0.15rem;
       }
     }
   }

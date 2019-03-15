@@ -6,7 +6,7 @@
 
 <style lang="scss">
 @import "assets/style/normolize";
-@import "assets/style/common.css";
+@import "assets/style/common";
 @import "assets/style/iconfont/iconfont.css";
 #app {
   width: 100%;

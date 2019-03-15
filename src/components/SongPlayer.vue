@@ -1,5 +1,5 @@
 <template>
-  <div class="player d-flex">
+  <div class="player d-flex" ref="playerBox">
     <div class="player-title d-flex">
       <i class="iconfont" @touchend="goBackList">&#xe6a9;</i>
       <div class="audio-info d-flex">
@@ -26,7 +26,7 @@
       <div class="progress-bar d-flex">
         <div class="update-time">{{ progressBar.updateMS }}</div>
         <div class="drag-bar">
-          <div class="progress-line">
+          <div class="progress-line" ref="progressLine">
             <div class="current-line" ref="currentLine"></div>
           </div>
           <div class="drag-btn" ref="dragBtn"></div>
@@ -80,7 +80,9 @@ export default {
         durationMS: "00:00"
       },
       whetherPause: false,
-      whetherLoop: true
+      whetherLoop: true,
+      offsetX: 0,
+      destinationX: 0
     };
   },
   methods: {
@@ -161,7 +163,25 @@ export default {
       this.index += 1;
       if (this.index === this.propList.length) this.index = 0;
       this.getSongInfo(this.index);
-    }
+    },
+    targetStart(e) {
+      this.destinationX = (this.$refs.playerBox.clientWidth - this.$refs.progressLine.clientWidth) / 2;
+      this.offsetX = e.touches[0].clientX;
+    }/*,
+    targetMove(e) {
+      let target = e.changedTouches[0];
+      if (target.clientX < this.destinationX || target.clientX === this.destinationX) {
+        target.target.style["left"] = "0";
+        return false;
+      } else if (target.clientX > this.$refs.progressLine.clientWidth + this.destinationX || target.clientX === this.$refs.progressLine.clientWidth + this.destinationX) {
+        target.target.style["left"] = this.$refs.progressLine.clientWidth + this.destinationX +"px";
+      } else {
+        target.target.style["left"] = target.clientX + "px";
+      }
+    }*/
+  },
+  mounted() {
+
   },
   watch: {
     playIndex(idx) {

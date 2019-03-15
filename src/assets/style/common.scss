@@ -6,6 +6,17 @@
     color: #d43c33 !important;
 }
 
+
+/* swiper */
+.swiper-wrapper {
+    height: 1.5rem !important;
+    img {
+        width: 100%;
+        height: 100% !important;
+        border-radius: .05rem;
+    }
+}
+
 /* Common */
 @keyframes circling {
     0% {
