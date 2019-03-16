@@ -4,7 +4,7 @@
       <i class="iconfont top-title-menu" @touchend.stop="showMenuSetting">&#xe60b;</i>
       <div class="top-title-nav">
         <i class="iconfont" :class="{active: 1 === topNavActive}" @touchend.stop="topPlaylist">&#xe6e1;</i>
-        <i class="iconfont" :class="{active: 2 === topNavActive}" @touchend.stop="topRecommend">&#xe63e;</i>
+        <i class="iconfont" :class="{active: 2 === topNavActive}" @touchend.stop="topRecommend">&#xe650;</i>
       </div>
       <i class="iconfont top-title-search">&#xe607;</i>
     </div>
@@ -92,22 +92,25 @@
       </transition>
       <transition name="fade">
         <div class="recommend" v-show="!navMainShow">
-          <!--<div class="swiper-container">
+          <div class="swiper-container">
             <div class="swiper-wrapper">
               <div v-for='(item,index) in banners' :key='index' class="swiper-slide">
                 <div class="iSlide">
                   <img class="img" :src="item.imageUrl">
+                  <!--<span class="banner-type">{{ item.typeTitle }}</span>-->
                 </div>
               </div>
             </div>
-          </div>-->
-          <swiper :options="swiperOption">
-            <!-- slides -->
-            <swiper-slide v-for="(item, index) of banners" :key="index">
-              <img class="swiper-img" :src="item.imageUrl" alt="">
-            </swiper-slide>
-            <div class="swiper-pagination"  slot="pagination"></div>
-          </swiper>
+            <div class="swiper-pagination"></div>
+          </div>
+          <div class="top-choose d-flex">
+            <div class="choose-item" v-for="(item, index) of chooseItems" :key="index">
+              <div class="choose-item-icon">
+                <i class="iconfont" :class="chooseIcons[index]"></i>
+              </div>
+              <div class="choose-item-name">{{ item}}</div>
+            </div>
+          </div>
         </div>
       </transition>
     </div>
@@ -119,6 +122,7 @@ import { SHOW_LOADING, HIDE_LOADING } from "../utils/loading/loading";
 import { LOGIN } from "../api/login";
 import { HOME_INDEX } from "../api/homeIndex";
 import { HANDLE_TOUCH } from "../utils/handleTouch/handleTouch";
+import Swiper from "swiper";
 export default {
   name: "HomeIndex",
   data() {
@@ -144,7 +148,9 @@ export default {
       createList: [],
       collectList: [],
       touchFlag: true,
-      banners: []
+      banners: [],
+      chooseItems: ["私人FM", "每日推荐", "歌单", "排行榜"],
+      chooseIcons: ["iconicon_live", "iconicon_calendar", "iconMusic", "iconicon_medal"]
     };
   },
   methods: {
@@ -219,7 +225,25 @@ export default {
       HOME_INDEX.getBanner().then(res => {
         res = res.data;
         this.banners = res.banners;
+        this.$nextTick(() => {
+          this.initSwiper();
+        })
       })
+    },
+    initSwiper() {
+      this.swiper = new Swiper('.swiper-container', {
+        loopAdditionalSlides: 1,
+        loop: true,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false
+        },
+        pagination: {
+          el: ".swiper-pagination"
+        },
+        observer: true,
+        observeParents: true
+      });
     }
   },
   mounted() {
@@ -240,6 +264,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~swiper/dist/css/swiper.css";
 .index {
   width: 100%;
   height: 100%;
@@ -284,6 +309,11 @@ export default {
         display: inline-block;
         height: 100%;
         padding: 0 0.15rem;
+        font-size: 0.28rem;
+        &:first-child {
+          font-weight: bold;
+          font-size: 0.26rem;
+        }
       }
       .active {
         color: #fff;
@@ -496,7 +526,50 @@ export default {
       }
       .swiper-container {
         box-sizing: border-box;
-        padding: 0 0.15rem;
+        padding: 0 0.07rem;
+        &::after {
+          display: block;
+          content: "";
+          width: 100%;
+          height: 1rem;
+          position: absolute;
+          top: 0;
+          left: 0;
+          background: #d43c33;
+        }
+        .iSlide {
+          position: relative;
+          .banner-type {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+          }
+        }
+      }
+      .top-choose {
+        box-sizing: border-box;
+        padding: 0.07rem 0.25rem 0.12rem 0.25rem;
+        border-bottom: 1px solid #f1f1f1;
+        justify-content: space-between;
+        .choose-item {
+          .choose-item-icon {
+            width: 0.5rem;
+            height: 0.5rem;
+            line-height: 0.5rem;
+            text-align: center;
+            border-radius: 50%;
+            background: #d43c33;
+            i {
+              font-size: 0.25rem;
+              color: #fff;
+            }
+          }
+          .choose-item-name {
+            margin-top: 0.05rem;
+            font-size: 0.13rem;
+            text-align: center;
+          }
+        }
       }
     }
   }
