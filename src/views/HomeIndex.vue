@@ -111,6 +111,19 @@
               <div class="choose-item-name">{{ item}}</div>
             </div>
           </div>
+          <div class="recommend-playlist">
+            <div class="rec-list-title">
+              <span>推荐歌单</span><i class="iconfont">&#xe610;</i>
+            </div>
+            <div class="rec-list-items d-flex">
+              <div class="rec-list-item" v-for="(item, index) of recPlayList" :key="index">
+                <div class="list-item-pic">
+                  <img :src="item.picUrl" alt="">
+                </div>
+                <div class="list-item-name">{{ item.name.length > 18 ? item.name.slice(0, 15) + "..." : item.name }}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </transition>
     </div>
@@ -150,7 +163,8 @@ export default {
       touchFlag: true,
       banners: [],
       chooseItems: ["私人FM", "每日推荐", "歌单", "排行榜"],
-      chooseIcons: ["iconicon_live", "iconicon_calendar", "iconMusic", "iconicon_medal"]
+      chooseIcons: ["iconicon_live", "iconicon_calendar", "iconMusic", "iconicon_medal"],
+      recPlayList: []
     };
   },
   methods: {
@@ -230,6 +244,17 @@ export default {
         })
       })
     },
+    getRecPlayList() {
+      HOME_INDEX.recommentPlayList().then(res => {
+        res = res.data;
+        if (res.code === 200) {
+          res = res.result;
+          for(let i = 0; i < 6; i++) {
+            this.recPlayList.push(res[i]);
+          }
+        }
+      })
+    },
     initSwiper() {
       this.swiper = new Swiper('.swiper-container', {
         loopAdditionalSlides: 1,
@@ -258,6 +283,7 @@ export default {
     this.getUserDetail();
     this.getPlayLists();
     this.getBanner();
+    this.getRecPlayList();
     HANDLE_TOUCH(_this);
   }
 }
@@ -487,7 +513,7 @@ export default {
       }
       .list-items {
         box-sizing: border-box;
-        padding: .07rem .08rem;
+        padding: .07rem .07rem;
         height: 0.65rem;
         .list-item-pic {
           width: 0.55rem;
@@ -568,6 +594,38 @@ export default {
             margin-top: 0.05rem;
             font-size: 0.13rem;
             text-align: center;
+          }
+        }
+      }
+      .recommend-playlist {
+        box-sizing: border-box;
+        padding: 0.23rem 0.07rem 0.1rem 0.07rem;
+        .rec-list-title {
+          font-size: 0.17rem;
+          font-weight: bold;
+          margin-bottom: 0.12rem;
+          i {
+            font-weight: lighter;
+            color: #bbb;
+          }
+        }
+        .rec-list-items {
+          width: 100%;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          .rec-list-item {
+           width: 32.7%;
+            margin-bottom: 0.1rem;
+            .list-item-pic {
+              img {
+                width: 100%;
+                height: auto;
+                border-radius: 0.03rem;
+              }
+            }
+            .list-item-name {
+              font-size: 0.12rem;
+            }
           }
         }
       }
