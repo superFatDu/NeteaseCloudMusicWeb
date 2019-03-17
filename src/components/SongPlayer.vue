@@ -88,6 +88,8 @@ export default {
   methods: {
     goBackList() {
       this.$emit("showSongList");
+      this.whetherPause = false;
+      this.pauseOrPlay();
     },
     getSongInfo(idx) {
       let params = {
@@ -163,11 +165,11 @@ export default {
       this.index += 1;
       if (this.index === this.propList.length) this.index = 0;
       this.getSongInfo(this.index);
-    },
+    }/*,
     targetStart(e) {
       this.destinationX = (this.$refs.playerBox.clientWidth - this.$refs.progressLine.clientWidth) / 2;
       this.offsetX = e.touches[0].clientX;
-    }/*,
+    },
     targetMove(e) {
       let target = e.changedTouches[0];
       if (target.clientX < this.destinationX || target.clientX === this.destinationX) {

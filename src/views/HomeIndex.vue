@@ -116,7 +116,7 @@
               <span>推荐歌单</span><i class="iconfont">&#xe610;</i>
             </div>
             <div class="rec-list-items d-flex">
-              <div class="rec-list-item" v-for="(item, index) of recPlayList" :key="index">
+              <div class="rec-list-item" v-for="(item, index) of recPlayList" :key="index" @touchend="turnToSongList(item)">
                 <div class="list-item-pic">
                   <img :src="item.picUrl" alt="">
                 </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="song">
-    <song-list :propList="originData" :propInfo="playListInfo" @turnToPlayer="toPlayer" v-show="!playerShow"></song-list>
-    <song-player :propList="originData.songList" :playIndex="playIndex" @showSongList="showSongList" v-show="playerShow"></song-player>
+    <song-list :propList="originData" @turnToPlayer="toPlayer" v-show="!playerShow"></song-list>
+    <song-player :propList="originData.tracks" :playIndex="playIndex" @showSongList="showSongList" v-show="playerShow"></song-player>
   </div>
 </template>
 
@@ -18,10 +18,7 @@ export default {
   },
   data() {
     return {
-      originData: {
-        songList: [],
-        songCount: 0
-      },
+      originData: {},
       playListInfo: {},
       playIndex: -1,
       playerShow: false
@@ -35,8 +32,7 @@ export default {
       SONG.getList(params).then(res => {
         res = res.data;
         if (res.code === 200) {
-          this.originData.songList = res.playlist.tracks;
-          this.originData.songCount = res.playlist.trackCount;
+          this.originData = res.playlist;
         }
       });
     },

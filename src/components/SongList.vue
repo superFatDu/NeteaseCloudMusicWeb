@@ -7,21 +7,21 @@
       </div>
       <div class="song-info d-flex">
         <div class="info-img">
-          <img :src="parentInfo.coverImgUrl" alt="">
+          <img :src="originList.coverImgUrl" alt="">
         </div>
         <div class="info-list">
-          <p class="lsit-name">{{parentInfo.name}}</p>
+          <p class="lsit-name">{{originList.name}}</p>
           <div class="user-info d-flex">
-            <img :src="parentInfo.creator.avatarUrl" alt="">
-            <span>{{parentInfo.creator.nickname}}</span>
+            <img :src="originList.creator['avatarUrl']" alt="">
+            <span>{{originList.creator['nickname']}}</span>
             <i class="iconfont">&#xe610;</i>
           </div>
         </div>
       </div>
     </div>
     <div class="song-list-items">
-      <div class="song-items-title">播放全部<span>(共{{originList.songCount}}首)</span></div>
-      <div class="song-item d-flex" v-for="(item, index) of originList.songList" :key="index" @touchend="turnToPlayer(index)">
+      <div class="song-items-title">播放全部<span>(共{{originList.trackCount}}首)</span></div>
+      <div class="song-item d-flex" v-for="(item, index) of originList.tracks" :key="index" @touchend="turnToPlayer(index)">
         <div class="song-item-num">{{ index + 1 }}</div>
         <div class="song-item-info d-flex">
           <p class="info-name">{{ item.name }}</p>
@@ -37,13 +37,11 @@ import { HANDLE_TOUCH } from "../utils/handleTouch/handleTouch";
 
 export default {
   props: {
-    propList: Object,
-    propInfo: Object
+    propList: Object
   },
   name: "SongList",
   data() {
     return {
-      parentInfo: this.propInfo,
       originList: this.propList,
       backTitle: "歌单",
       touchFlag: true
@@ -57,11 +55,20 @@ export default {
       if (this.touchFlag) {
         this.$emit("turnToPlayer", idx);
       }
+    },
+    initData() {
+      this.originList = this.propList;
     }
   },
   created() {
+    this.initData();
     let _this = this;
     HANDLE_TOUCH(_this);
+  },
+  watch: {
+    propList(val) {
+      this.originList = this.propList;
+    }
   }
 }
 </script>
